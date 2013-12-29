@@ -1,0 +1,22 @@
+{
+  "main": "main.html",
+  "name": "HitRat",
+  "description": "HitRat",
+  "version": "0.1.0",
+  "author": "wzq224@gmail.com",
+  "window": {
+    "title": "Hit Rat",
+    "toolbar": false,
+    "frame": true,
+    "width": 820,
+    "height": 620,
+    "position": "mouse",
+    "min_width": 820,
+    "min_height":620,
+    "max_width": 820,
+    "max_height": 620
+  },
+  "webkit": {
+    "plugin": true
+  }
+}

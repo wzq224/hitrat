@@ -1,0 +1,246 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css" >
+#grassland {
+	width: 800px;
+	height: 600px;
+	/*cursor: url('./img/hammer.cur'), auto;*/
+}
+#rat {
+	left: 20px;
+	top: 300px;
+	position: absolute;
+}
+#life{
+	position: absolute;
+	top: 20px;
+	left:650;
+}
+#score{
+	position: absolute;
+	top: 20px;
+	left:20px;
+}
+#title{
+	position: absolute;
+	top: 0px;
+	left:250px;
+}
+#prompt{
+	position: absolute;
+	width: 400px;
+	height: 250px;
+	
+	top:150px;
+	left:200px;
+	display: none;
+}
+#prompt div{
+	position: absolute;
+	top:200px;
+	left:70px;
+	
+}
+#start {
+	position: absolute;
+
+	top:150px;
+	left:150px;
+	
+}
+#start button {
+	position: absolute;
+	
+	top:100px;
+	left:300px;
+}
+#showpoint{
+	position: absolute;
+	display: none;
+}
+
+</style>
+<script type="text/javascript">
+
+window.onload = function(){
+	var oGrassland = document.getElementById('grassland');
+
+	oGrassland.style.cursor = 'url(\"./img/hammer.cur\"),auto';
+
+	var oStart = document.getElementById('start');
+	oStart.onclick = function(){
+		gameStart();
+		oStart.style.display = 'none';
+	}
+}
+
+
+function gameStart(){
+	
+	var oRat = document.getElementById('rat');//获取地鼠div的元素
+	var iLeft = 0;//定义地鼠div距左边的位置
+	var iTop = 0;//定义地鼠div距上边的位置
+	var iLife = 3; //生命次数
+	var iTotalScore = 0;//总分数
+	
+	//获取游戏初始化位置
+	var randomNum1 = Math.floor(Math.random()*10000);
+	iLeft = randomNum1%(800-80);//随机产生地鼠div距左边的位置
+	var randomNum2 = Math.floor(Math.random()*10000);
+	iTop = randomNum2%(500-80) + 100;//随机产生地鼠div距上边的位置
+		//设置位置
+	oRat.style.left = iLeft;
+	oRat.style.top  = iTop;
+
+	//设置定时器，随机出现地鼠位置
+	var time = setInterval(function(){
+
+		randomNum1 = Math.floor(Math.random()*10000);
+		iLeft = randomNum1%(800-80);//随机产生地鼠div距左边的位置
+		randomNum2 = Math.floor(Math.random()*10000);
+		iTop = randomNum2%(500-80) + 100;//随机产生地鼠div距上边的位置
+		//设置位置
+		oRat.style.left = iLeft;
+		oRat.style.top  = iTop;
+		oRat.style.display = 'block';
+		iLife--;
+		showLife(iLife);
+		if (iLife <= 0){//没有生命值，游戏结束
+			//clearInterval(time);
+			result(iTotalScore);	
+		}
+	},(2000 - iTotalScore));
+
+		document.onclick = function(ev){
+			var oGrassland = document.getElementById('grassland');
+			oGrassland.style.cursor = 'url(\"./img/hammer2.cur\"),auto';
+
+		var oEvent=event||ev;
+		//获取鼠标点击的位置
+		var iHammerX = oEvent.clientX;
+		var iHammerY = oEvent.clientY;
+
+		//获取地鼠的中心位置
+		var iRatX = iLeft + 40;
+		var iRatY = iTop + 40;
+
+		//计算地鼠中心位置和鼠标点击位置的绝对位置
+		var iDistance = Math.floor(Math.sqrt((iHammerX-iRatX)*(iHammerX-iRatX) + (iHammerY-iRatY)*(iHammerY-iRatY)));
+
+		var iScore = 0;//此次打地鼠的分数
+		if (iLife > 0) {
+			if (iDistance < 56) {//偏差太大，减少生命值
+			
+			    //计算此次打地鼠的分数最高5分，最低零分
+				iScore = Math.floor((56- iDistance)/10);
+				iTotalScore += iScore;
+				oRat.style.display = 'none';
+				showScore(iTotalScore);	
+				iLife++;
+			}
+		};
+		showPoint(iScore,iLeft,iTop);	
+	}	
+}
+
+
+//显示此次的得分
+function showPoint(point,x,y){
+	var oGrassland = document.getElementById('grassland');
+	var oShowPoint = document.getElementById('showpoint');
+	oShowPoint.style.display = 'block';
+	var oImg = oShowPoint.getElementsByTagName('img')[0];
+	oImg.src = "./img/"+point+".png";
+	oShowPoint.style.left = x;
+	oShowPoint.style.top = y - 37;
+	setTimeout(function(){
+		oShowPoint.style.display = 'none';
+		oGrassland.style.cursor = 'url(\"./img/hammer.cur\"),auto';	
+	},500);
+}
+
+//显示总得分
+function showScore(score){
+	var oScore = document.getElementById('score');
+	var oImg = oScore.getElementsByTagName('img');
+
+	var iHP =  Math.floor(score/100);
+	var iD = Math.floor(score/10) % 10;
+	var iU = score % 10;
+	oImg[0].src = "./img/"+iHP+".png";
+	oImg[1].src = "./img/"+iD+".png";
+	oImg[2].src = "./img/"+iU+".png";
+}
+
+//
+function showLife(Life){
+	if (Life < 0) {
+		Life = 0;
+	};
+	var oScore = document.getElementById('life');
+	var oImg = oScore.getElementsByTagName('img');
+	for (var i = 0; i < 3 - Life; i++) {
+	 	oImg[i].src = "./img/life1.png";
+	};
+}
+
+
+function result(iTotalScore){
+	var oPrompt = document.getElementById('prompt');
+
+	var oBtn = oPrompt.getElementsByTagName('div')[0].getElementsByTagName('button');
+	oBtn[0].onclick = function(){
+		 location.replace(location.href);
+	}
+	oBtn[1].onclick = function(){
+		window.opener=null;
+		window.open('','_self');
+		window.close();
+	}
+	var oImg = oPrompt.getElementsByTagName('img')[0];
+	oPrompt.style.display = 'block';
+	/*oBtn[1].onclick = */
+	if (iTotalScore < 50) 
+		oImg.src = './img/prompt1.png';
+	else if (iTotalScore < 100) 
+		oImg.src = './img/prompt2.png';
+	else
+		oImg.src = './img/prompt3.png';	
+}
+
+
+</script>
+</head>
+<body>
+	<div id="grassland">
+		<img src="./img/grassland.jpg" />
+		<div id="score" >
+			<img src="./img/0.png"/>
+			<img src="./img/0.png"/>
+			<img src="./img/0.png"/>
+		</div>
+		<div id="title" ><img src="./img/title.png"/></div>
+		<div id="life">
+			<img src="./img/life.png"/>
+			<img src="./img/life.png"/>
+			<img src="./img/life.png"/>
+		</div>
+		<div id="rat"><img src="./img/rat.png"/></div>
+	</div>
+	<div id="prompt">
+		<img src="">
+		<div>
+			<button><img src="./img/restart.png"/></button>
+			<button><img src="./img/exit.png"/></button>
+		</div>
+	</div>
+	<div id="start">
+		<img src="./img/start.png">
+		<button><img src="./img/startbtn.png"></button>
+	</div>
+	<div id="showpoint">
+		<img src="./img/0.png">
+	</div>
+</body>	
+</html>
